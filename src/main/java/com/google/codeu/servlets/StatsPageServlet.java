@@ -71,3 +71,31 @@ public class StatsPageServlet extends HttpServlet{
 	  
   }
 }
+
+public void biggestMessage(HttpServletRequest request, HttpServletResponse response) 
+		  throws IOException{
+	  
+	  response.setContentType("application/json");
+	  
+	  List<com.google.codeu.data.Message> allmessages = datastore.getAllMessages();
+	  
+	  if(allmessages.size()!=0) {
+		  com.google.codeu.data.Message biggest = allmessages.get(0);
+		  
+		  for(int i = 1;i<allmessages.size();i++) {
+			  if(allmessages.get(i).getText().length()>biggest.getText().length()) {
+				biggest = allmessages.get(i);  
+			  }
+		  }
+		  
+		  JsonObject jsonObject = new JsonObject();
+		  jsonObject.addProperty("biggestMessage", biggest.toString());
+		  response.getOutputStream().println(jsonObject.toString());
+	  } else {
+		  JsonObject jsonObject = new JsonObject();
+		  jsonObject.addProperty("biggestMessage", 0);
+		  response.getOutputStream().println(jsonObject.toString());
+	  }
+	  
+}
+}
