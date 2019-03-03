@@ -54,15 +54,15 @@ public class Datastore {
    *     message. List is sorted by time descending.
    */
   public List<Message> getMessages(String user) {
-  	
-    Query query =
-        new Query("Message")
-            .setFilter(new Query.FilterPredicate("user", FilterOperator.EQUAL, user))
-            .addSort("timestamp", SortDirection.DESCENDING);
-    PreparedQuery results = datastore.prepare(query);
+	  	
+	    Query query =
+	        new Query("Message")
+	            .setFilter(new Query.FilterPredicate("user", FilterOperator.EQUAL, user))
+	            .addSort("timestamp", SortDirection.DESCENDING);
+	    PreparedQuery results = datastore.prepare(query);
 
-    convertEntitiesToMessages(results);
-  }
+	   return convertEntitiesToMessages(results);
+	  }
 
   /**
    * Gets messages posted by all users.
