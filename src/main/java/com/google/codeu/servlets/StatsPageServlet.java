@@ -19,7 +19,6 @@ import com.google.gson.JsonObject;
 public class StatsPageServlet extends HttpServlet{
 
   private Datastore datastore;
-
   @Override
   public void init() {
     datastore = new Datastore();
@@ -44,7 +43,6 @@ public class StatsPageServlet extends HttpServlet{
   /*
    * Obtaining the average message by going through all the list
    */
-  
   public void avgMessage(HttpServletRequest request, HttpServletResponse response) 
 		  throws IOException{
 	  
@@ -52,7 +50,12 @@ public class StatsPageServlet extends HttpServlet{
 	  
 	  List<com.google.codeu.data.Message> allmessages = datastore.getAllMessages();
 	  
-	  if(allmessages.size()!=0) {
+	  if(allmessages.size()==0) {
+		  JsonObject jsonObject = new JsonObject();
+		  jsonObject.addProperty("messageAvg", 0);
+		  response.getOutputStream().println(jsonObject.toString());
+		  
+	  } else {
 		  int count = 0;
 		  
 		  for(int i = 0;i<allmessages.size();i++) {
@@ -63,16 +66,11 @@ public class StatsPageServlet extends HttpServlet{
 		  JsonObject jsonObject = new JsonObject();
 		  jsonObject.addProperty("messageAvg", avg);
 		  response.getOutputStream().println(jsonObject.toString());
-	  } else {
-		  JsonObject jsonObject = new JsonObject();
-		  jsonObject.addProperty("messageAvg", 0);
-		  response.getOutputStream().println(jsonObject.toString());
 	  }
-	  
   }
-}
 
-public void biggestMessage(HttpServletRequest request, HttpServletResponse response) 
+
+  public void biggestMessage(HttpServletRequest request, HttpServletResponse response) 
 		  throws IOException{
 	  
 	  response.setContentType("application/json");
