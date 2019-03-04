@@ -21,6 +21,9 @@
         const messageAverageElement = buildStatElement('Message average: ' + stats.messageAvg);
         statsContainer.appendChild(messageAverageElement);
 
+        const messageBigElement = buildStatElement('Biggest Message: ' + stats.biggestMessage);
+        statsContainer.appendChild(messageBigElement);
+
         console.log(stats);
         console.log(stats.messageAvg);
 

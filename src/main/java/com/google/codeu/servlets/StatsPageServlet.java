@@ -32,68 +32,50 @@ public class StatsPageServlet extends HttpServlet{
       throws IOException {
 
     response.setContentType("application/json");
-
-    int messageCount = datastore.getTotalMessageCount();
-
+    
+    //Json for the JS
     JsonObject jsonObject = new JsonObject();
+    
+    //Number of messages
+    int messageCount = datastore.getTotalMessageCount();
+    
+    //Number of messages property added to the Json
     jsonObject.addProperty("messageCount", messageCount);
+    
+    //List of all messages
+    List<com.google.codeu.data.Message> allmessages = datastore.getAllMessages();
+    com.google.codeu.data.Message message = new com.google.codeu.data.Message("Alan", "Ola k ase");
+    allmessages.add(message);
+	
+    //Checking the size of the list
+	if(allmessages.size()==0) {
+		jsonObject.addProperty("messageAvg", 0); 
+	} else {
+		int count = 0;
+		  
+		for(int i = 0;i<allmessages.size();i++) {
+	    count+= allmessages.get(i).getText().length();
+		}	  
+		
+		int avg = count/allmessages.size();
+		jsonObject.addProperty("messageAvg", avg);
+	}
+	  
+	//
+	if(allmessages.size()!=0) {
+		com.google.codeu.data.Message biggest = allmessages.get(0);
+		  
+		for(int i = 1;i<allmessages.size();i++) {
+			if(allmessages.get(i).getText().length()>biggest.getText().length()) {
+			biggest = allmessages.get(i);  
+			}
+		}
+		jsonObject.addProperty("biggestMessage", biggest.getText());
+	  } else {
+		jsonObject.addProperty("biggestMessage", 0);
+	  }
+    
     response.getOutputStream().println(jsonObject.toString());
+    
   }
-  
-  /*
-   * Obtaining the average message by going through all the list
-   */
-  public void avgMessage(HttpServletRequest request, HttpServletResponse response) 
-		  throws IOException{
-	  
-	  response.setContentType("application/json");
-	  
-	  List<com.google.codeu.data.Message> allmessages = datastore.getAllMessages();
-	  
-	  if(allmessages.size()==0) {
-		  JsonObject jsonObject = new JsonObject();
-		  jsonObject.addProperty("messageAvg", 0);
-		  response.getOutputStream().println(jsonObject.toString());
-		  
-	  } else {
-		  int count = 0;
-		  
-		  for(int i = 0;i<allmessages.size();i++) {
-			  count+= allmessages.get(i).getText().length();
-		  }
-		  
-		  int avg = count/allmessages.size();
-		  JsonObject jsonObject = new JsonObject();
-		  jsonObject.addProperty("messageAvg", avg);
-		  response.getOutputStream().println(jsonObject.toString());
-	  }
-  }
-
-
-  public void biggestMessage(HttpServletRequest request, HttpServletResponse response) 
-		  throws IOException{
-	  
-	  response.setContentType("application/json");
-	  
-	  List<com.google.codeu.data.Message> allmessages = datastore.getAllMessages();
-	  
-	  if(allmessages.size()!=0) {
-		  com.google.codeu.data.Message biggest = allmessages.get(0);
-		  
-		  for(int i = 1;i<allmessages.size();i++) {
-			  if(allmessages.get(i).getText().length()>biggest.getText().length()) {
-				biggest = allmessages.get(i);  
-			  }
-		  }
-		  
-		  JsonObject jsonObject = new JsonObject();
-		  jsonObject.addProperty("biggestMessage", biggest.toString());
-		  response.getOutputStream().println(jsonObject.toString());
-	  } else {
-		  JsonObject jsonObject = new JsonObject();
-		  jsonObject.addProperty("biggestMessage", 0);
-		  response.getOutputStream().println(jsonObject.toString());
-	  }
-	  
-}
 }
