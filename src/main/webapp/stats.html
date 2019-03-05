@@ -23,8 +23,14 @@
         const messageBigElement = buildStatElement('Biggest Message: ' + stats.biggestMessage);
         statsContainer.appendChild(messageBigElement);
 
-        console.log(stats);
-        console.log(stats.messageAvg);
+        const usersCountElement = buildStatElement('Total number of users: ' + stats.usersCount);
+        statsContainer.appendChild(usersCountElement);
+
+        const usersListElement = buildStatElement('List of all users: ' + stats.usersList);
+        statsContainer.appendChild(usersListElement);
+
+        const mostActiveElement = buildStatElement('Most active user: ' + stats.mostActiveUser);
+        statsContainer.appendChild(mostActiveElement);
 
         //document.getElementById('stats-container').innerHTML=5;
       });

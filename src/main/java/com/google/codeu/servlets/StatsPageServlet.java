@@ -1,7 +1,11 @@
 package com.google.codeu.servlets;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.AbstractCollection;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -28,10 +32,13 @@ public class StatsPageServlet extends HttpServlet{
    * Responds with site statistics in JSON.
    */
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response)
-      throws IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
     response.setContentType("application/json");
+    
+    com.google.codeu.data.Message message = new com.google.codeu.data.Message("Alan", "Ola k ase");
+    com.google.codeu.data.Message message2 = new com.google.codeu.data.Message("Pepe", "Ola k asekdkdkd");
+    com.google.codeu.data.Message message3 = new com.google.codeu.data.Message("Pepe", "Ola k asejasnfanfjkasnfjadfn");
     
     //Json for the JS
     JsonObject jsonObject = new JsonObject();
@@ -44,36 +51,76 @@ public class StatsPageServlet extends HttpServlet{
     
     //List of all messages
     List<com.google.codeu.data.Message> allmessages = datastore.getAllMessages();
-    com.google.codeu.data.Message message = new com.google.codeu.data.Message("Alan", "Ola k ase");
     allmessages.add(message);
+    allmessages.add(message2);
+    allmessages.add(message3);
+    
+    //Store of the biggest message
+    com.google.codeu.data.Message biggest = allmessages.get(0);
 	
     //Checking the size of the list
 	if(allmessages.size()==0) {
+		
 		jsonObject.addProperty("messageAvg", 0); 
+		jsonObject.addProperty("biggestMessage", 0);
+		jsonObject.addProperty("userCount", 0);
+		jsonObject.addProperty("usersList", "Not any user");
+		jsonObject.addProperty("mostActiveUser", "None");
+		
 	} else {
-		int count = 0;
-		  
+		/*
+		 * countM, total number of messages
+		 * users, register of all users
+		 */
+		int countM = 0;
+		ArrayList<String> users = new ArrayList<>();
+		ArrayList<Integer> usersNumberOfMessages = new ArrayList<>();
+		
 		for(int i = 0;i<allmessages.size();i++) {
-	    count+= allmessages.get(i).getText().length();
+			//count for the avg of all messages
+			countM+= allmessages.get(i).getText().length();
+			
+			//getting the biggest message
+			if(allmessages.get(i).getText().length()>biggest.getText().length()) {
+				biggest = allmessages.get(i);  
+			}
+			
+			//getting and saving the user and message count
+			if(!users.contains(allmessages.get(i).getUser())) {
+				users.add(allmessages.get(i).getUser());
+				usersNumberOfMessages.add(1);
+			} else {
+				usersNumberOfMessages.set(users.indexOf(allmessages.get(i).getUser()), usersNumberOfMessages.get(users.indexOf(allmessages.get(i).getUser()))+1);
+			}
 		}	  
 		
-		int avg = count/allmessages.size();
-		jsonObject.addProperty("messageAvg", avg);
-	}
-	  
-	//
-	if(allmessages.size()!=0) {
-		com.google.codeu.data.Message biggest = allmessages.get(0);
-		  
-		for(int i = 1;i<allmessages.size();i++) {
-			if(allmessages.get(i).getText().length()>biggest.getText().length()) {
-			biggest = allmessages.get(i);  
+		//Checking who has the most sent messages
+		int indexOfMoreMessages = -1;
+		int mostMessages = -1;
+		
+		for(int j = 0;j<usersNumberOfMessages.size();j++) {
+			if(usersNumberOfMessages.get(j)>mostMessages) {
+				indexOfMoreMessages = j;
+				mostMessages = usersNumberOfMessages.get(j); 
 			}
 		}
+		
+		int avg = countM/allmessages.size();
+		String userMostMessages = users.get(indexOfMoreMessages);
+		/*
+		 * Adding properties to Json:
+		 * Average length of messages
+		 * Biggest message found
+		 * Total users
+		 * List of users
+		 * User with most messages sent
+		 */
+		jsonObject.addProperty("messageAvg", avg);
 		jsonObject.addProperty("biggestMessage", biggest.getText());
-	  } else {
-		jsonObject.addProperty("biggestMessage", 0);
-	  }
+		jsonObject.addProperty("usersCount", users.size());
+		jsonObject.addProperty("usersList", users.toString().substring(1, users.toString().length()-1));
+		jsonObject.addProperty("mostActiveUser", userMostMessages);
+	}
     
     response.getOutputStream().println(jsonObject.toString());
     
