@@ -37,8 +37,14 @@ public class StatsPageServlet extends HttpServlet{
     response.setContentType("application/json");
     
     com.google.codeu.data.Message message = new com.google.codeu.data.Message("Alan", "Ola k ase");
-    com.google.codeu.data.Message message2 = new com.google.codeu.data.Message("Pepe", "Ola k asekdkdkd");
-    com.google.codeu.data.Message message3 = new com.google.codeu.data.Message("Pepe", "Ola k asejasnfanfjkasnfjadfn");
+    com.google.codeu.data.Message message2 = new com.google.codeu.data.Message("Pepe", "Esta chido el CodeU");
+    com.google.codeu.data.Message message3 = new com.google.codeu.data.Message("Pepe", "Que me voy al GooglePlex!!!!!!");
+    
+    //List of all messages
+    List<com.google.codeu.data.Message> allmessages = datastore.getAllMessages();
+    allmessages.add(message);
+    allmessages.add(message2);
+    allmessages.add(message3);
     
     //Json for the JS
     JsonObject jsonObject = new JsonObject();
@@ -48,12 +54,6 @@ public class StatsPageServlet extends HttpServlet{
     
     //Number of messages property added to the Json
     jsonObject.addProperty("messageCount", messageCount);
-    
-    //List of all messages
-    List<com.google.codeu.data.Message> allmessages = datastore.getAllMessages();
-    allmessages.add(message);
-    allmessages.add(message2);
-    allmessages.add(message3);
     
     //Store of the biggest message
     com.google.codeu.data.Message biggest = allmessages.get(0);

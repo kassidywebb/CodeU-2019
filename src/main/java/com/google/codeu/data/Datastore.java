@@ -54,14 +54,15 @@ public class Datastore {
    *     message. List is sorted by time descending.
    */
   public List<Message> getMessages(String user) {
-	  	
-	    Query query =
-	        new Query("Message")
-	            .setFilter(new Query.FilterPredicate("user", FilterOperator.EQUAL, user))
-	            .addSort("timestamp", SortDirection.DESCENDING);
-	    PreparedQuery results = datastore.prepare(query);
-	   return convertEntitiesToMessages(results);
-	  }
+	
+	Query query =
+	new Query("Message")
+	    .setFilter(new Query.FilterPredicate("user", FilterOperator.EQUAL, user))
+	    .addSort("timestamp", SortDirection.DESCENDING);
+	PreparedQuery results = datastore.prepare(query);
+	
+	return convertEntitiesToMessages(results);
+  }
 
   /**
    * Gets messages posted by all users.
@@ -69,13 +70,13 @@ public class Datastore {
    * @return a list of messages posted by all users, or empty list if no user has ever posted a
    *     message. List is sorted by time descending.
    */
-public List<Message> getAllMessages(){
+  public List<Message> getAllMessages(){
 
-  Query query = new Query("Message")
-    .addSort("timestamp", SortDirection.DESCENDING);
-  PreparedQuery results = datastore.prepare(query);
-
-  return convertEntitiesToMessages(results);
+    Query query = new Query("Message")
+        .addSort("timestamp", SortDirection.DESCENDING);
+    PreparedQuery results = datastore.prepare(query);
+    
+    return convertEntitiesToMessages(results);
  }
 
   /**
@@ -83,26 +84,27 @@ public List<Message> getAllMessages(){
    *
    * @return null, updates List<Message> messages
    */
-public List<Message> convertEntitiesToMessages(PreparedQuery results){
-  List<Message> messages = new ArrayList<>();
+  public List<Message> convertEntitiesToMessages(PreparedQuery results){
+    List<Message> messages = new ArrayList<>();
 
-  for (Entity entity : results.asIterable()) {
-   try {
-    String idString = entity.getKey().getName();
-    UUID id = UUID.fromString(idString);
-    String user = (String) entity.getProperty("user");
-    String text = (String) entity.getProperty("text");
-    long timestamp = (long) entity.getProperty("timestamp");
+    for (Entity entity : results.asIterable()) {
+      try {
+       String idString = entity.getKey().getName();
+       UUID id = UUID.fromString(idString);
+       String user = (String) entity.getProperty("user");
+       String text = (String) entity.getProperty("text");
+       long timestamp = (long) entity.getProperty("timestamp");
 
-    Message message = new Message(id, user, text, timestamp);
-    messages.add(message);
-   } catch (Exception e) {
-    System.err.println("Error reading message.");
-    System.err.println(entity.toString());
-    e.printStackTrace();
-   }
-  }
-  return messages;
+       Message message = new Message(id, user, text, timestamp);
+       messages.add(message);
+      } catch (Exception e) {
+       System.err.println("Error reading message.");
+       System.err.println(entity.toString());
+       e.printStackTrace();
+      }
+    }
+    
+    return messages;
 }
   
   /** Returns the total number of messages for all users. */
@@ -115,29 +117,29 @@ public List<Message> convertEntitiesToMessages(PreparedQuery results){
   /**
   * Stores the User in Datastore Entity
   */
- public void storeUser(User user) {
-  Entity userEntity = new Entity("User", user.getEmail());
-  userEntity.setProperty("email", user.getEmail());
-  userEntity.setProperty("aboutMe", user.getAboutMe());
-  datastore.put(userEntity);
- }
+  public void storeUser(User user) {
+   Entity userEntity = new Entity("User", user.getEmail());
+   userEntity.setProperty("email", user.getEmail());
+   userEntity.setProperty("aboutMe", user.getAboutMe());
+   datastore.put(userEntity);
+  }
 
  /**
   * Returns the User of email address with aboutMe, or
   * null if no matching User was found.
   */
- public User getUser(String email) {
-  Query query = new Query("User") .setFilter(new Query.FilterPredicate(
-                                                        "email",
-                                                        FilterOperator.EQUAL,
-                                                        email
-                                                      )
+  public User getUser(String email) {
+   Query query = new Query("User") .setFilter(new Query.FilterPredicate(
+                                                         "email",
+                                                         FilterOperator.EQUAL,
+                                                         email
+                                                       )
                                             );
-  PreparedQuery results = datastore.prepare(query);
-  Entity userEntity = results.asSingleEntity();
-  if (userEntity == null) {
-   return null;
-  }
+   PreparedQuery results = datastore.prepare(query);
+   Entity userEntity = results.asSingleEntity();
+   if (userEntity == null) {
+    return null;
+   }
 
   //Return aboutMe
   String aboutMe = (String) userEntity.getProperty("aboutMe");
