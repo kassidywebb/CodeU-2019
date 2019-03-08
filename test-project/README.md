@@ -23,6 +23,7 @@ file being tested can be run.
   - If you are working with a new library, add the needed dependency to pom.xml
 
   - Run `mvn compile` <i>to compile all files. If you have build errors, fix them then recompile </i>
+    -It may be necessary to run `mvn package` before compiling to build the proper packaging dependencies
 
   - Run `mvn exec:java -Dexec.mainClass="com.codeU.demo.[Filename without '.java']"`
     - <i> Example: `mvn exec:java -Dexec.mainClass="com.codeU.demo.SentimentTest"`
